@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block extraheads %}
+    <script>
+        function remove_mapping(mapping) {
+            if (confirm(("Are you sure remove mapping #" + mapping + "?"))) {
+                $.get("/remove_mapping/" + mapping, function (data) {
+                    $("#mapping_" + mapping).remove();
+                });
+            }
+        }
+    </script>
+{% endblock extraheads %}
+
+{% block content %}
+    <h3>Package Mappings</h3>
+    <a href="{% url "add_mapping" %}" class="btn btn-primary">Add</a>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Orig name</th>
+            <th>To name</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for mapping in mappings %}
+            <tr id="mapping_{{ mapping.pk }}">
+                <td>{{ mapping.pk }}</td>
+                <td>{{ mapping.orig_name }}</td>
+                <td>{{ mapping.to_name }}</td>
+                <td>
+                    <a href="{% url "edit_mapping" mapping.pk %}" type="button" class="btn btn-default btn-xs" title="Settings">
+                        <span class="glyphicon glyphicon-wrench"></span>
+                    </a>
+
+                    <button onclick="remove_mapping({{ mapping.pk }})" type="button"
+                            class="btn btn-default btn-xs"
+                            title="Remove">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

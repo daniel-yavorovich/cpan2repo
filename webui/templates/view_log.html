@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>Build logs of package: {{ build_conf.name }}</h3>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Last build: {{ build_conf.last_build_date }}</h3>
+        </div>
+        <div class="panel-body">
+            {{ build_conf.build_log }}
+        </div>
+    </div>
+{% endblock content %}

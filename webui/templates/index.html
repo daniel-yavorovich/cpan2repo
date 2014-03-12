@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block extraheads %}
+    <script>
+        function autobuild_on_off(build_conf) {
+            $.get("/autobuild_on_off/" + build_conf, function (data) {
+                var btn = $("#build_conf_" + build_conf + " .btn_autobuild");
+                var icon = $("#build_conf_" + build_conf + " .btn_autobuild span");
+                if (data == "True") {
+                    btn.prop("title", "Pause auto-build");
+                    icon.removeClass("glyphicon-play");
+                    icon.addClass("glyphicon-pause");
+                    $("#build_conf_" + build_conf).removeClass("danger");
+                }
+                else {
+                    btn.prop("title", "Resume auto-build");
+                    icon.removeClass("glyphicon-pause");
+                    icon.addClass("glyphicon-play");
+                    $("#build_conf_" + build_conf).addClass("danger");
+                }
+            });
+        }
+        function remove_build_conf(build_conf) {
+            if (confirm(("Are you sure remove build config #" + build_conf + "?"))) {
+                $.get("/remove_build_conf/" + build_conf, function (data) {
+                    $("#build_conf_" + build_conf).remove();
+                });
+            }
+        }
+    </script>
+    <style>
+        .branch_name {
+            text-transform: capitalize;
+        }
+    </style>
+{% endblock extraheads %}
+
+{% block content %}
+    <h3>Build configurations</h3>
+    <a href="{% url "add_build_conf" %}" class="btn btn-primary">Add</a>
+    <a href="{% url "rebuild_all_packages" %}" class="btn btn-primary">Rebuild all</a>
+    <br><br>
+    {% for branch in branches %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="branch_name">{{ branch.name }}</h4>
+                <a href="{% url "rebuild_packages_by_branch" branch.pk %}" type="button" class="btn btn-default btn-xs"
+                   title="Rebuild all packages of this branch">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </a>
+                <a href="{% url "edit_branch" branch.pk %}" type="button" class="btn btn-default btn-xs"
+                   title="Settings">
+                    <span class="glyphicon glyphicon-wrench"></span>
+                </a>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Package</th>
+                        <th>Version</th>
+                        <th>Status</th>
+                        <th>Last build</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for build_conf in branch.buildconfiguration_set.all %}
+                        <tr id="build_conf_{{ build_conf.pk }}"
+                            {% if not build_conf.auto_build %}class="danger"{% endif %}>
+                            <td>{{ build_conf.pk }}</td>
+                            <td>{{ build_conf.name }}</td>
+                            <td>{{ build_conf.version }}</td>
+                            <td>
+                                <span class="label label-{% if build_conf.status == 2 %}info{% elif build_conf.status == 3 %}success{% elif build_conf.status == 4 %}danger{% else %}default{% endif %}">{{ build_conf.get_status_display }}</span>
+                            </td>
+                            <td>{{ build_conf.last_build_date|naturaltime }}</td>
+                            <td>
+                                <a href="{% url "rebuild_package" build_conf.pk %}" type="button"
+                                   class="btn btn-default btn-xs"
+                                   title="Rebuild">
+                                    <span class="glyphicon glyphicon-refresh"></span>
+                                </a>
+
+                                {% if build_conf.get_fisheye_link %}
+                                    <a href="{{ build_conf.get_fisheye_link }}" type="button"
+                                       class="btn btn-default btn-xs"
+                                       title="Link to Fisheye" target="_blank">
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </a>
+                                {% endif %}
+
+                                <button onclick="autobuild_on_off({{ build_conf.pk }})"
+                                        class="btn btn-default btn-xs btn_autobuild"
+                                        title="{% if build_conf.auto_build %}Pause{% else %}Resume{% endif %} auto-build">
+                                    {% if build_conf.auto_build %}
+                                        <span class="glyphicon glyphicon-pause"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-play"></span>
+                                    {% endif %}
+                                </button>
+
+                                <a href="{% url "edit_build_conf" build_conf.pk %}" type="button"
+                                   class="btn btn-default btn-xs"
+                                   title="Settings">
+                                    <span class="glyphicon glyphicon-wrench"></span>
+                                </a>
+
+                                <button onclick="remove_build_conf({{ build_conf.pk }})" type="button"
+                                        class="btn btn-default btn-xs"
+                                        title="Remove">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+
+                                {% if build_conf.status == 3 or build_conf.status == 4 %}
+                                    <a href="{% url "view_log" build_conf.pk %}" type="button"
+                                       class="btn btn-default btn-xs"
+                                       title="Last build log">
+                                        <span class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock content %}
