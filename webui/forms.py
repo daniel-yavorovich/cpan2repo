@@ -15,8 +15,8 @@ class BuildConfigurationForm(ModelForm):
         model = BuildConfiguration
         fields = ['name', 'git_url', 'git_user', 'git_pass',
                   'git_branch', 'pkg_branch', 'install_root',
-                   'pre_install_script', 'post_install_script',
-                   'depends_list', 'auto_build']
+                  'build_script', 'pre_install_script',
+                  'post_install_script', 'depends_list', 'auto_build']
 
 
 class PackageNameMappingForm(ModelForm):

@@ -168,6 +168,18 @@ def build_pkg(build_conf_id):
         stop_by_error(build_conf, e)
         return False
 
+    if build_conf.build_script:
+        buildscriptfile_path = "/tmp/buildscript_%d-%d.sh" % (build_conf.pk, build_conf.version)
+        buildscriptfile = open(buildscriptfile_path, "w")
+        buildscriptfile.write(str(build_conf.build_script.replace("\r", "")))
+        buildscriptfile.close()
+        os.chmod(buildscriptfile_path, 0775)
+        buildscript_result = commands.getstatusoutput(buildscriptfile_path)
+        os.unlink(buildscriptfile_path)
+        if buildscript_result[0]:
+            stop_by_error(build_conf, buildscript_result[1])
+            return False
+
     build_conf.last_commit_id = last_commit_id
     build_conf.save()
 

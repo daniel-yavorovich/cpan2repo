@@ -33,6 +33,7 @@ class BuildConfiguration(models.Model):
     install_root = models.CharField(max_length=255)
     pre_install_script = models.TextField(null=True, blank=True)
     post_install_script = models.TextField(null=True, blank=True)
+    build_script = models.TextField(null=True, blank=True)
     depends_list = models.TextField(null=True, blank=True)
     build_log = models.TextField(null=True, blank=True)
     last_commit_id = models.CharField(max_length=100, null=True, blank=True)
