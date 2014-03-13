@@ -105,6 +105,7 @@ CELERY_ENABLE_UTC = True
 CPANM_PATH = "/usr/local/bin/cpanm"
 TMP_BUILD_DIR = "/home/agent/cpan2repo/build"
 CHECK_CORE_MODULE_PATH = "/usr/local/bin/check_core_module.pl"
+FISHEYE_LINK = None
 
 try:
     from cpan2repo.local_settings import *
