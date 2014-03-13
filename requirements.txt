@@ -12,7 +12,6 @@ pytz==2013.9
 requests==2.2.1
 wsgiref==0.1.2
 GitPython==0.1.7
-wadofstuff-django-serializers==1.1.0
 South==0.8.4
 python-redmine
 django-redmine-auth-backend
