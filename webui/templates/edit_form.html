@@ -1,6 +1,27 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
 
+{% block extraheads %}
+    <script>
+        $(function () {
+            $('#id_conf_type').on('change', function () {
+                window.location = "{% url "add_build_conf" %}" + this.value;
+            });
+        });
+
+        $(function () {
+            $('#id_is_virtual').on('change', function () {
+                if ($('#id_path').is(':visible')) {
+                    $('#id_path').parent().hide();
+                }
+                else {
+                    $('#id_path').parent().show();
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
     <h3>{{ title }}</h3>
     <form method="post" action="" class="form">

@@ -86,9 +86,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-SERIALIZATION_MODULES = {
-    'json': 'wadofstuff.django.serializers.json'
-}
+#SERIALIZATION_MODULES = {
+#    'json': 'wadofstuff.django.serializers.json'
+#}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

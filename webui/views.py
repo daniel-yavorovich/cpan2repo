@@ -1,5 +1,4 @@
 import json
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from cpan2repo.tasks import build_pkg
@@ -7,16 +6,18 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from webui.models import Branch, BuildConfiguration, PackageNameMapping
 from django.http import HttpResponseRedirect, HttpResponse
-from webui.forms import BranchForm, BuildConfigurationForm, PackageNameMappingForm
+from webui.forms import BranchForm, BuildConfigurationForm, PackageNameMappingForm, RemoteBuildConfigurationForm
 
 
 # Build configurations views
 @login_required
 def index(request):
     branches = Branch.objects.exclude(buildconfiguration=None).order_by('-pk')
+    remote_build_confs = BuildConfiguration.objects.filter(pkg_branch=None)
 
     return render(request, 'index.html', {
         'branches': branches,
+        'remote_build_confs': remote_build_confs,
         'current_page': 'build_conf',
     }, content_type="text/html")
 
@@ -29,15 +30,26 @@ def build_confs_list(request):
         content_type="application/json"
     )
 
+
 @login_required
-def add_build_conf(request):
-    if request.method == "POST":
-        form = BuildConfigurationForm(request.POST)
+def add_build_conf(request, conf_type="deb"):
+    print conf_type
+    if conf_type == "remote":
+        build_conf_form = RemoteBuildConfigurationForm
     else:
-        form = BuildConfigurationForm()
+        build_conf_form = BuildConfigurationForm
+
+    if request.method == "POST":
+        form = build_conf_form(request.POST, initial={"conf_type": conf_type})
+    else:
+        form = build_conf_form(initial={"conf_type": conf_type})
 
     if form.is_valid():
         build_conf = form.save()
+        if conf_type == "remote":
+            # Set Remote Build virtual branch
+            build_conf.pkg_branch = Branch.objects.get(pk=1)
+            build_conf.save()
         messages.add_message(request, messages.SUCCESS, 'Build configuration "%s" created.' % build_conf.name)
         return HttpResponseRedirect(reverse('index'))
 

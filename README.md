@@ -52,6 +52,7 @@ Deploy cpan2repo
     EOF
     python manage.py syncdb --all
     python manage.py migrate --fake
+    pyhon manage.py loaddata webui/fixtrues/virual_branch.json
     exit
 
     apt-get -y install gunicorn

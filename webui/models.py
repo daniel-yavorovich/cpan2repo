@@ -12,8 +12,9 @@ STATUS_CHOICE = (
 
 class Branch(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    path = models.CharField(max_length=300)
+    path = models.CharField(max_length=300, blank=True, null=True)
     maintainer = models.CharField(max_length=300, verbose_name="User Name <user@mail.tld>")
+    is_virtual = models.BooleanField()
 
     def __unicode__(self):
         return self.name
@@ -24,19 +25,24 @@ class BuildConfiguration(models.Model):
     version = models.IntegerField(default=0, blank=True)
     status = models.IntegerField(default=0, blank=True, choices=STATUS_CHOICE)
     last_build_date = models.DateTimeField(blank=True, null=True)
+    last_commit_id = models.CharField(max_length=100, null=True, blank=True)
     git_url = models.URLField()
     git_user = models.CharField(max_length=100)
     git_pass = models.CharField(max_length=100)
     git_branch = models.CharField(max_length=100)
-    pkg_branch = models.ForeignKey(Branch)
     auto_build = models.BooleanField(default=False, blank=True)
+    build_script = models.TextField(null=True, blank=True)
+    build_log = models.TextField(null=True, blank=True)
+    build_on_commit_in = models.ManyToManyField('BuildConfiguration', blank=True, null=True)
+    pkg_branch = models.ForeignKey(Branch, blank=True, null=True)
     install_root = models.CharField(max_length=255)
     pre_install_script = models.TextField(null=True, blank=True)
     post_install_script = models.TextField(null=True, blank=True)
-    build_script = models.TextField(null=True, blank=True)
     depends_list = models.TextField(null=True, blank=True)
-    build_log = models.TextField(null=True, blank=True)
-    last_commit_id = models.CharField(max_length=100, null=True, blank=True)
+    remote_ip = models.IPAddressField(null=True, blank=True)
+    ssh_user = models.CharField(max_length=32, null=True, blank=True)
+    ssh_pass = models.CharField(max_length=255, blank=True, null=True)
+    ssh_private_key = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
         return self.name

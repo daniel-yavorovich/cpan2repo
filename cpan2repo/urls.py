@@ -6,7 +6,10 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
                        url(r'^$', 'webui.views.index', name='index'),
+
+                       url(r'^add_build_conf/(.*)/$', 'webui.views.add_build_conf', name='add_build_conf'),
                        url(r'^add_build_conf/$', 'webui.views.add_build_conf', name='add_build_conf'),
+
                        url(r'^autobuild_on_off/(?P<build_conf_id>\d+)$', 'webui.views.autobuild_on_off',
                            name='autobuild_on_off'),
                        url(r'^view_log/(?P<build_conf_id>\d+)$', 'webui.views.view_log', name='view_log'),
