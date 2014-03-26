@@ -39,10 +39,10 @@ class BuildConfiguration(models.Model):
     pre_install_script = models.TextField(null=True, blank=True)
     post_install_script = models.TextField(null=True, blank=True)
     depends_list = models.TextField(null=True, blank=True)
-    remote_ip = models.IPAddressField(null=True, blank=True)
+    remote_ip = models.CharField(max_length=100, null=True, blank=True)
     ssh_user = models.CharField(max_length=32, null=True, blank=True)
     ssh_pass = models.CharField(max_length=255, blank=True, null=True)
-    ssh_private_key = models.TextField(blank=True, null=True)
+    ssh_port = models.IntegerField(max_length=7, blank=True, null=True)
 
     def __unicode__(self):
         return self.name

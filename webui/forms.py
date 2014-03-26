@@ -20,6 +20,8 @@ class BaseForm(forms.ModelForm):
 
 class BuildConfigurationForm(BaseForm):
 
+    pkg_branch = forms.ModelChoiceField(queryset=Branch.objects.exclude(pk=1))
+
     def __init__(self, *args, **kwargs):
         super(BuildConfigurationForm, self).__init__(*args, **kwargs)
         for key in ['pkg_branch', 'install_root']:
@@ -38,15 +40,15 @@ class RemoteBuildConfigurationForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super(RemoteBuildConfigurationForm, self).__init__(*args, **kwargs)
-        for key in ['remote_ip', 'ssh_user', 'build_script']:
+        for key in ['remote_ip', 'ssh_user', 'ssh_pass', 'build_script']:
             self.fields[key].required = True
 
     class Meta:
         model = BuildConfiguration
         fields = ['conf_type', 'name', 'git_url', 'git_user', 'git_pass',
                   'git_branch', 'build_script',
-                  'remote_ip', 'ssh_user',
-                  'ssh_pass', 'ssh_private_key',
+                  'remote_ip', 'ssh_port',
+                  'ssh_user', 'ssh_pass',
                   'build_on_commit_in', 'auto_build']
 
 

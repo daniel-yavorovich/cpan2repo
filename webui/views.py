@@ -1,7 +1,7 @@
 import json
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from cpan2repo.tasks import build_pkg
+from cpan2repo.tasks import start_build
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from webui.models import Branch, BuildConfiguration, PackageNameMapping
@@ -63,10 +63,18 @@ def add_build_conf(request, conf_type="deb"):
 @login_required
 def edit_build_conf(request, build_conf_id):
     build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
-    if request.method == "POST":
-        form = BuildConfigurationForm(request.POST, instance=build_conf)
+
+    if build_conf.pkg_branch_id == 1:
+        build_conf_form = RemoteBuildConfigurationForm
     else:
-        form = BuildConfigurationForm(instance=build_conf)
+        build_conf_form = BuildConfigurationForm
+
+    if request.method == "POST":
+        form = build_conf_form(request.POST, instance=build_conf)
+    else:
+        form = build_conf_form(instance=build_conf)
+
+    del form.fields["conf_type"]
 
     if form.is_valid():
         build_conf = form.save()
@@ -110,7 +118,7 @@ def autobuild_on_off(request, build_conf_id):
 def rebuild_package(request, build_conf_id):
     build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
     try:
-        build_pkg.delay(build_conf.pk)
+        start_build.delay(build_conf.pk)
         messages.add_message(request, messages.SUCCESS, 'Task for rebuild package "%s" in branch "%s" sent.' % (
             build_conf.name, build_conf.pkg_branch))
     except:
@@ -125,7 +133,7 @@ def rebuild_package(request, build_conf_id):
 def rebuild_all_packages(request):
     try:
         for build_conf in BuildConfiguration.objects.all():
-            build_pkg.delay(build_conf.pk)
+            start_build.delay(build_conf.pk)
         messages.add_message(request, messages.SUCCESS, 'Task for rebuild all packages sent.')
     except:
         messages.add_message(request, messages.ERROR, 'Internal error send task for rebuild all packages.')
@@ -188,7 +196,7 @@ def rebuild_packages_by_branch(request, branch_id):
     branch = get_object_or_404(Branch, pk=branch_id)
     try:
         for build_conf in branch.buildconfiguration_set.all():
-            build_pkg.delay(build_conf.pk)
+            start_build.delay(build_conf.pk)
         messages.add_message(request, messages.SUCCESS, 'Task for rebuild packages by branch "%s" sent.' % branch.name)
     except:
         messages.add_message(request, messages.ERROR,

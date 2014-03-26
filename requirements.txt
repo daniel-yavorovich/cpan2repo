@@ -13,5 +13,4 @@ requests==2.2.1
 wsgiref==0.1.2
 GitPython==0.1.7
 South==0.8.4
-python-redmine
-git+https://github.com/daniel-yavorovich/django-redmine-auth-backend.git
+paramiko==1.13.0

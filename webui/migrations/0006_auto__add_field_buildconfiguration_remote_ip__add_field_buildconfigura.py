@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'BuildConfiguration.remote_ip'
         db.add_column(u'webui_buildconfiguration', 'remote_ip',
-                      self.gf('django.db.models.fields.IPAddressField')(max_length=15, null=True, blank=True),
+                      self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'BuildConfiguration.ssh_user'
@@ -23,9 +23,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
                       keep_default=False)
 
-        # Adding field 'BuildConfiguration.ssh_private_key'
-        db.add_column(u'webui_buildconfiguration', 'ssh_private_key',
-                      self.gf('django.db.models.fields.TextField')(null=True, blank=True),
+        # Adding field 'BuildConfiguration.ssh_port'
+        db.add_column(u'webui_buildconfiguration', 'ssh_port',
+                      self.gf('django.db.models.fields.IntegerField')(max_length=7, null=True, blank=True),
                       keep_default=False)
 
         # Adding M2M table for field build_on_commit_in on 'BuildConfiguration'
@@ -40,6 +40,14 @@ class Migration(SchemaMigration):
 
         # Changing field 'BuildConfiguration.pkg_branch'
         db.alter_column(u'webui_buildconfiguration', 'pkg_branch_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['webui.Branch'], null=True))
+        # Adding field 'Branch.is_virtual'
+        db.add_column(u'webui_branch', 'is_virtual',
+                      self.gf('django.db.models.fields.BooleanField')(default=False),
+                      keep_default=False)
+
+
+        # Changing field 'Branch.path'
+        db.alter_column(u'webui_branch', 'path', self.gf('django.db.models.fields.CharField')(max_length=300, null=True))
 
     def backwards(self, orm):
         # Deleting field 'BuildConfiguration.remote_ip'
@@ -51,8 +59,8 @@ class Migration(SchemaMigration):
         # Deleting field 'BuildConfiguration.ssh_pass'
         db.delete_column(u'webui_buildconfiguration', 'ssh_pass')
 
-        # Deleting field 'BuildConfiguration.ssh_private_key'
-        db.delete_column(u'webui_buildconfiguration', 'ssh_private_key')
+        # Deleting field 'BuildConfiguration.ssh_port'
+        db.delete_column(u'webui_buildconfiguration', 'ssh_port')
 
         # Removing M2M table for field build_on_commit_in on 'BuildConfiguration'
         db.delete_table(db.shorten_name(u'webui_buildconfiguration_build_on_commit_in'))
@@ -60,14 +68,21 @@ class Migration(SchemaMigration):
 
         # Changing field 'BuildConfiguration.pkg_branch'
         db.alter_column(u'webui_buildconfiguration', 'pkg_branch_id', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['webui.Branch']))
+        # Deleting field 'Branch.is_virtual'
+        db.delete_column(u'webui_branch', 'is_virtual')
+
+
+        # Changing field 'Branch.path'
+        db.alter_column(u'webui_branch', 'path', self.gf('django.db.models.fields.CharField')(default=None, max_length=300))
 
     models = {
         u'webui.branch': {
             'Meta': {'object_name': 'Branch'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_virtual': ('django.db.models.fields.BooleanField', [], {}),
             'maintainer': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'path': ('django.db.models.fields.CharField', [], {'max_length': '300'})
+            'path': ('django.db.models.fields.CharField', [], {'max_length': '300', 'null': 'True', 'blank': 'True'})
         },
         u'webui.buildconfiguration': {
             'Meta': {'object_name': 'BuildConfiguration'},
@@ -88,9 +103,9 @@ class Migration(SchemaMigration):
             'pkg_branch': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['webui.Branch']", 'null': 'True', 'blank': 'True'}),
             'post_install_script': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'pre_install_script': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'remote_ip': ('django.db.models.fields.IPAddressField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'remote_ip': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'ssh_pass': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'ssh_private_key': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'ssh_port': ('django.db.models.fields.IntegerField', [], {'max_length': '7', 'null': 'True', 'blank': 'True'}),
             'ssh_user': ('django.db.models.fields.CharField', [], {'max_length': '32', 'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'}),
             'version': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'})

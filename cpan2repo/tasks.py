@@ -5,6 +5,7 @@ import shutil
 import logging
 import commands
 import datetime
+import paramiko
 from celery import shared_task
 from django.conf import settings
 from cpan2repo.cpanm import get_pkg_depends
@@ -122,7 +123,6 @@ def make_deb_from_cpan(cpan_name, pass_ignore=False):
         return False
 
 
-@shared_task
 def build_pkg(build_conf_id):
     """
     Build debian package from
@@ -289,6 +289,55 @@ Description: {description}
 
     build_conf.save()
 
+    return True
+
+
+def run_remote_script(build_conf_id):
+    build_conf = BuildConfiguration.objects.get(pk=build_conf_id)
+
+    try:
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(
+            hostname=str(build_conf.remote_ip),
+            username=build_conf.ssh_user,
+            password=build_conf.ssh_pass,
+            port=build_conf.ssh_port
+        )
+
+        stdin, stdout, stderr = client.exec_command(build_conf.build_script)
+        build_conf.build_log = stdout.read() + stderr.read()
+        build_conf.last_build_date = datetime.datetime.now()
+        client.close()
+    except Exception as e:
+        stop_by_error(build_conf, e)
+        return False
+
+    build_conf.status = 3
+    build_conf.save()
+
+    return True
+
+
+@shared_task
+def start_build(build_conf_id, current_id=None):
+    build_conf = BuildConfiguration.objects.get(pk=build_conf_id)
+
+    print("Package %s updates. Run rebuild task." % build_conf.name)
+
+    build_conf.status = 2
+    build_conf.version += 1
+
+    if current_id:
+        build_conf.last_commit_id = current_id
+
+    build_conf.save()
+
+    if build_conf.pkg_branch_id == 1:
+        return run_remote_script(build_conf.pk)
+    else:
+        return build_pkg(build_conf.pk)
+
 
 @shared_task
 def autobuild():
@@ -300,7 +349,6 @@ def autobuild():
     for build_conf in BuildConfiguration.objects.filter(auto_build=True):
         current_id = get_ref_id(build_conf)
         if build_conf.last_commit_id != current_id:
-            print("Package %s updates. Run rebuild task." % build_conf.name)
-            build_conf.last_commit_id = current_id
-            build_conf.save()
-            build_pkg.delay(build_conf.pk)
+            start_build.deplay(build_conf.pk, current_id)
+            for rel_build_conf in BuildConfiguration.objects.filter(build_on_commit_in=build_conf):
+                start_build.deplay(rel_build_conf.pk)
