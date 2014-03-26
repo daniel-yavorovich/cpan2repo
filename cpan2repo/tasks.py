@@ -302,7 +302,7 @@ def run_remote_script(build_conf_id):
             hostname=str(build_conf.remote_ip),
             username=build_conf.ssh_user,
             password=build_conf.ssh_pass,
-            port=build_conf.ssh_port
+            port=int(build_conf.ssh_port)
         )
 
         stdin, stdout, stderr = client.exec_command(build_conf.build_script)
