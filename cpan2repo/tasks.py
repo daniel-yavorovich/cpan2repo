@@ -349,6 +349,6 @@ def autobuild():
     for build_conf in BuildConfiguration.objects.filter(auto_build=True):
         current_id = get_ref_id(build_conf)
         if build_conf.last_commit_id != current_id:
-            start_build.deplay(build_conf.pk, current_id)
+            start_build(build_conf.pk, current_id)
             for rel_build_conf in BuildConfiguration.objects.filter(build_on_commit_in=build_conf):
-                start_build.deplay(rel_build_conf.pk)
+                start_build(rel_build_conf.pk)
