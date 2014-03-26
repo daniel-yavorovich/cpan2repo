@@ -45,7 +45,7 @@ class BuildConfiguration(models.Model):
     ssh_port = models.IntegerField(max_length=7, blank=True, null=True)
 
     def __unicode__(self):
-        return self.name
+        return "%s - %s" % (self.name, self.pkg_branch.name)
 
     @property
     def get_repo_name(self):
