@@ -305,7 +305,7 @@ def run_remote_script(build_conf_id):
             port=int(build_conf.ssh_port)
         )
 
-        stdin, stdout, stderr = client.exec_command(build_conf.build_script)
+        stdin, stdout, stderr = client.exec_command(str(build_conf.build_script).replace("\r", ""))
         build_conf.build_log = stdout.read() + stderr.read()
         build_conf.last_build_date = datetime.datetime.now()
         client.close()
