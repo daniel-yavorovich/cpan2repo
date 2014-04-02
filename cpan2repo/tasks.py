@@ -202,7 +202,7 @@ def build_pkg(build_conf_id):
             try:
                 module_name = get_release_info(line.split("'")[1])["metadata"]["name"]
             except:
-                pass
+                continue
 
             if PackageNameMapping.objects.filter(orig_name=module_name):
                 pkg_name = PackageNameMapping.objects.get(orig_name=module_name).to_name
