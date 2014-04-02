@@ -42,6 +42,10 @@ def get_ref_id(build_conf):
     except:
         pass
 
+    # GIT commit id require one word, does not have any " " in content.
+    if " " in ref_id:
+        ref_id = None
+
     return ref_id
 
 
@@ -147,7 +151,7 @@ def build_pkg(build_conf_id):
     last_commit_id = get_ref_id(build_conf)
 
     if not last_commit_id:
-        stop_by_error(build_conf, "Branch '%s' not found" % build_conf.git_branch)
+        stop_by_error(build_conf, "Can't get last commit ID. Please check GIT url, login info / branch name.")
         return False
 
     # Checkout git repo
@@ -348,6 +352,9 @@ def autobuild():
 
     for build_conf in BuildConfiguration.objects.filter(auto_build=True):
         current_id = get_ref_id(build_conf)
+        if not current_id:
+            stop_by_error(build_conf, "Can't get last commit ID. Please check GIT url, login info / branch name.")
+            continue
         if build_conf.last_commit_id != current_id:
             start_build(build_conf.pk, current_id)
             for rel_build_conf in BuildConfiguration.objects.filter(build_on_commit_in=build_conf):
