@@ -44,8 +44,8 @@ def get_ref_id(build_conf):
 
     # GIT commit id require one word, does not have any " " in content.
     if " " in ref_id:
-        ref_id = None
         stop_by_error(build_conf, "Can't get last commit ID: %s" % ref_id)
+        ref_id = None
 
     return ref_id
 
