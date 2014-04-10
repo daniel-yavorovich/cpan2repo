@@ -39,12 +39,13 @@ def get_ref_id(build_conf):
     try:
         command = "git ls-remote {git_url} refs/heads/{branch}".format(git_url=git_url, branch=build_conf.git_branch)
         ref_id = unicode(commands.getstatusoutput(command)[1].split("\t")[0])
-    except:
-        pass
+    except Exception as error_description:
+        stop_by_error(build_conf, "Can't get last commit ID: %s" % error_description)
 
     # GIT commit id require one word, does not have any " " in content.
     if " " in ref_id:
         ref_id = None
+        stop_by_error(build_conf, "Can't get last commit ID: %s" % ref_id)
 
     return ref_id
 
@@ -151,7 +152,6 @@ def build_pkg(build_conf_id):
     last_commit_id = get_ref_id(build_conf)
 
     if not last_commit_id:
-        stop_by_error(build_conf, "Can't get last commit ID. Please check GIT url, login info / branch name.")
         return False
 
     # Checkout git repo
@@ -353,7 +353,6 @@ def autobuild():
     for build_conf in BuildConfiguration.objects.filter(auto_build=True):
         current_id = get_ref_id(build_conf)
         if not current_id:
-            stop_by_error(build_conf, "Can't get last commit ID. Please check GIT url, login info / branch name.")
             continue
         if build_conf.last_commit_id != current_id:
             start_build(build_conf.pk, current_id)
