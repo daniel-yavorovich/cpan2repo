@@ -299,6 +299,9 @@ Description: {description}
 def run_remote_script(build_conf_id):
     build_conf = BuildConfiguration.objects.get(pk=build_conf_id)
 
+    if not get_ref_id(build_conf):
+        return False
+
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
