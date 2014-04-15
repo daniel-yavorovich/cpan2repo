@@ -353,7 +353,7 @@ def autobuild():
     on git commit
     """
 
-    for build_conf in BuildConfiguration.objects.filter(auto_build=True):
+    for build_conf in BuildConfiguration.objects.filter(auto_build=True).exclude(status=2):
         current_id = get_ref_id(build_conf)
         if not current_id:
             continue
