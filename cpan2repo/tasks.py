@@ -358,6 +358,6 @@ def autobuild():
         if not current_id:
             continue
         if build_conf.last_commit_id != current_id:
-            start_build(build_conf.pk, current_id)
+            start_build.delay(build_conf.pk, current_id)
             for rel_build_conf in BuildConfiguration.objects.filter(build_on_commit_in=build_conf):
-                start_build(rel_build_conf.pk)
+                start_build.delay(rel_build_conf.pk)
