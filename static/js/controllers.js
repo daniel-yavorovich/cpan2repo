@@ -4,8 +4,8 @@
 
 var builderControllers = angular.module('builderControllers', []);
 
-builderControllers.controller('DebBuildListCtrl', ['$scope', '$http', 'BuildConf',
-    function ($scope, $http, BuildConf) {
+builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
+    function ($scope, $http) {
         $http.get('/api/build_confs/').success(function (data) {
             if ($scope.build_confs != data) {
                 $scope.build_confs = data;
@@ -55,9 +55,14 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http', 'BuildConf
     }]);
 
 
-builderControllers.controller('BranchestListCtrl', ['$scope', '$http', 'Branch',
-    function ($scope, $http, Branch) {
-        $scope.branches = Branch.query();
+builderControllers.controller('BranchestListCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $http.get('/api/branches/').success(function (data) {
+            if ($scope.branches != data) {
+                $scope.branches = data;
+            }
+        });
+
         $scope.alerts = [];
 
         $scope.closeAlert = function (index) {
@@ -83,9 +88,13 @@ builderControllers.controller('BranchestListCtrl', ['$scope', '$http', 'Branch',
         setInterval($scope.getData, 5000);
     }]);
 
-builderControllers.controller('MappingCtrl', ['$scope', '$http', 'Mapping',
-    function ($scope, $http, Mapping) {
-        $scope.mappings = Mapping.query();
+builderControllers.controller('MappingCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $http.get('/api/mapping/').success(function (data) {
+            if ($scope.mappings != data) {
+                $scope.mappings = data;
+            }
+        });
         $scope.alerts = [];
 
         $scope.closeAlert = function (index) {
