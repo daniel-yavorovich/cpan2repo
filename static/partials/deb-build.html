@@ -66,7 +66,7 @@
                 {{ build_conf.status | status_display }}
             </span>
         </td>
-        <td>{{ build_conf.last_build_date | date:'medium' }}</td>
+        <td>{{ build_conf.last_build_date | timeago}}</td>
         <td>
             <button ng-click="rebuild_pkg(build_conf.pk)"
                     class="btn btn-default btn-xs"
