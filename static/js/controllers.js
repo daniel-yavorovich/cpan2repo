@@ -41,7 +41,7 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http', 'BuildConf
 
         $scope.getData = function () {
             $http.get('/api/build_confs/').success(function (data) {
-                if ($scope.build_confs.length != data.length) {
+                if ($scope.build_confs != data) {
                     $scope.build_confs = data;
                 }
             });
@@ -70,7 +70,7 @@ builderControllers.controller('BranchestListCtrl', ['$scope', '$http', 'Branch',
 
         $scope.getData = function () {
             $http.get('/api/branches/').success(function (data) {
-                if ($scope.branches.length != data.length) {
+                if ($scope.branches != data) {
                     $scope.branches = data;
                 }
             });
@@ -98,7 +98,7 @@ builderControllers.controller('MappingCtrl', ['$scope', '$http', 'Mapping',
 
         $scope.getData = function () {
             $http.get('/api/mapping/').success(function (data) {
-                if ($scope.mappings.length != data.length) {
+                if ($scope.mappings != data) {
                     $scope.mappings = data;
                 }
             });
