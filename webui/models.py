@@ -3,9 +3,9 @@ from django.conf import settings
 
 STATUS_CHOICE = (
     (0, "None"),
-    (1, "Success"), # 3
+    (1, "Success"),
     (2, "In progress"),
-    (3, "Pending"), # 1
+    (3, "Pending"),
     (4, "Error"),
 )
 

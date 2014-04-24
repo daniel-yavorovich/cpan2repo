@@ -39,6 +39,8 @@ def mapping(request):
 @login_required
 def rebuild_package(request, build_conf_id):
     build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
+    build_conf.status = 3
+    build_conf.save()
     try:
         start_build.delay(build_conf.pk)
         message = {
