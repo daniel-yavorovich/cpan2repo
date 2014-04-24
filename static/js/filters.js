@@ -2,19 +2,18 @@ angular.module('builderFilters', []).
     filter('status_display',function () {
         return function (status_id) {
             var name;
-            var css_style;
             switch (status_id) {
                 case 0:
                     name = "None";
                     break
                 case 1:
-                    name = "Pending";
+                    name = "Success";
                     break
                 case 2:
                     name = "In progress";
                     break
                 case 3:
-                    name = "Success";
+                    name = "Pending";
                     break;
                 case 4:
                     name = "Error";
@@ -28,20 +27,19 @@ angular.module('builderFilters', []).
     }).
     filter('status_label_type',function () {
         return function (status_id) {
-            var name;
             var css_style;
             switch (status_id) {
                 case 0:
                     css_style = "default";
                     break
                 case 1:
-                    css_style = "default";
+                    css_style = "success";
                     break
                 case 2:
                     css_style = "info";
                     break
                 case 3:
-                    css_style = "success";
+                    css_style = "default";
                     break;
                 case 4:
                     css_style = "danger";

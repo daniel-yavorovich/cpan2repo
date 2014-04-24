@@ -118,7 +118,7 @@ def make_deb_from_cpan(cpan_name, pass_ignore=False):
     build_result = commands.getstatusoutput(build_command)
 
     if "--- Done" in build_result[1]:
-        pkg.status = 3
+        pkg.status = 1
         pkg.save()
         logging.warn("Package %s build successful" % cpan_name)
         return True
@@ -284,7 +284,7 @@ Description: {description}
     os.chdir(settings.TMP_BUILD_DIR)
 
     if re.search("dpkg-deb: building package.*in", build_output):
-        build_conf.status = 3
+        build_conf.status = 1
         logging.info("Build package %s done." % PACKAGE_NAME)
         shutil.rmtree(settings.TMP_BUILD_DIR + "/" + PKG_BUILD_DIR)
     else:
@@ -320,7 +320,7 @@ def run_remote_script(build_conf_id):
         stop_by_error(build_conf, e)
         return False
 
-    build_conf.status = 3
+    build_conf.status = 1
     build_conf.save()
 
     return True
