@@ -7,12 +7,10 @@ var builderControllers = angular.module('builderControllers', []);
 builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $http.get('/api/build_confs/').success(function (data) {
-            if ($scope.build_confs != data) {
-                $scope.build_confs = data;
-            }
+            $scope.build_confs = data;
         });
 
-        $scope.orderProp = '-fields.status';
+        $scope.orderProp = '-status';
         $scope.alerts = [];
 
         $scope.closeAlert = function (index) {
@@ -29,7 +27,7 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
             $http.get('/api/autobuild_on_off/' + build_conf_id).success(function (data) {
                 for (var build_conf in $scope.build_confs) {
                     if ($scope.build_confs[build_conf].pk == build_conf_id) {
-                        $scope.build_confs[build_conf].fields.auto_build = data[0].fields.auto_build;
+                        $scope.build_confs[build_conf].auto_build = data.autobuild_status;
                     }
                 }
             });
@@ -40,7 +38,7 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
             if (is_confirm) {
                 for (var build_conf in $scope.build_confs) {
                     if ($scope.build_confs[build_conf].pk == build_conf_id) {
-                        $scope.build_confs[build_conf].fields.status = 3;
+                        $scope.build_confs[build_conf].status = 3;
                     }
                 }
                 $http.get('/api/remove_build_conf/' + build_conf_id).success(function (data) {
@@ -49,12 +47,7 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
             }
         }
 
-        $scope.getData = function () {
-            $http.get('/api/build_confs/').success(function (data) {
-                $scope.build_confs = data;
-            });
-        };
-        setInterval($scope.getData, 5000);
+
     }]);
 
 

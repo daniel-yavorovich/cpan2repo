@@ -1,5 +1,4 @@
 import json
-from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from cpan2repo.tasks import start_build
 from django.shortcuts import render, get_object_or_404
@@ -17,21 +16,28 @@ def index(request):
 
 def branches(request):
     return HttpResponse(
-        serializers.serialize('json', Branch.objects.all()),
+        json.dumps(
+            list(Branch.objects.values("pk", "name", "path", "maintainer", "is_virtual"))
+        ),
         content_type="application/json"
     )
 
 
 def build_confs(request):
     return HttpResponse(
-        serializers.serialize('json', BuildConfiguration.objects.all()),
+        json.dumps(
+            list(BuildConfiguration.objects.values("pk", "name", "pkg_branch__name", "version", "status",
+                                                   "last_build_date", "auto_build"))
+        ),
         content_type="application/json"
     )
 
 
 def mapping(request):
     return HttpResponse(
-        serializers.serialize('json', PackageNameMapping.objects.all()),
+        json.dumps(
+            list(PackageNameMapping.objects.values("pk", "orig_name", "to_name"))
+        ),
         content_type="application/json"
     )
 
@@ -67,7 +73,7 @@ def autobuild_on_off(request, build_conf_id):
     build_conf.save()
 
     return HttpResponse(
-        serializers.serialize('json', [build_conf]),
+        json.dumps({"autobuild_status": build_conf.auto_build}),
         content_type="application/json"
     )
 

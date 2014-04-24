@@ -22,33 +22,33 @@
         </th>
         <th>
             Package
-            <a href="" ng-click="orderProp = 'fields.name'"><span class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-fields.name'"><span class="glyphicon glyphicon-chevron-down"></span></a>
+            <a href="" ng-click="orderProp = 'name'"><span class="glyphicon glyphicon-chevron-up"></span></a>
+            <a href="" ng-click="orderProp = '-name'"><span class="glyphicon glyphicon-chevron-down"></span></a>
         </th>
         <th>
             Branch
-            <a href="" ng-click="orderProp = 'fields.git_branch'"><span
+            <a href="" ng-click="orderProp = 'git_branch'"><span
                     class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-fields.git_branch'"><span
+            <a href="" ng-click="orderProp = '-git_branch'"><span
                     class="glyphicon glyphicon-chevron-down"></span></a>
         </th>
         <th>
             Version
-            <a href="" ng-click="orderProp = 'fields.version'"><span class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-fields.version'"><span
+            <a href="" ng-click="orderProp = 'version'"><span class="glyphicon glyphicon-chevron-up"></span></a>
+            <a href="" ng-click="orderProp = '-version'"><span
                     class="glyphicon glyphicon-chevron-down"></span></a>
         </th>
         <th>
             Status
-            <a href="" ng-click="orderProp = 'fields.status'"><span class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-fields.status'"><span
+            <a href="" ng-click="orderProp = 'status'"><span class="glyphicon glyphicon-chevron-up"></span></a>
+            <a href="" ng-click="orderProp = '-status'"><span
                     class="glyphicon glyphicon-chevron-down"></span></a>
         </th>
         <th>
             Last build
-            <a href="" ng-click="orderProp = 'fields.last_build_date'"><span
+            <a href="" ng-click="orderProp = 'last_build_date'"><span
                     class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-fields.last_build_date'"><span
+            <a href="" ng-click="orderProp = '-last_build_date'"><span
                     class="glyphicon glyphicon-chevron-down"></span></a>
         </th>
         <th>Actions</th>
@@ -56,17 +56,17 @@
     </thead>
     <tbody>
     <tr ng-repeat="build_conf in build_confs | filter:query | orderBy:orderProp"
-        class="{{ build_conf.fields.auto_build | play_pause_tr }}danger">
+        class="{{ build_conf.auto_build | play_pause_tr }}danger">
         <td>{{ build_conf.pk }}</td>
-        <td>{{ build_conf.fields.name }}</td>
-        <td>{{ build_conf.fields.git_branch }}</td>
-        <td>{{ build_conf.fields.version }}</td>
+        <td>{{ build_conf.name }}</td>
+        <td>{{ build_conf.pkg_branch__name }}</td>
+        <td>{{ build_conf.version }}</td>
         <td>
-            <span class="label label-{{ build_conf.fields.status | status_label_type }}">
-                {{ build_conf.fields.status | status_display }}
+            <span class="label label-{{ build_conf.status | status_label_type }}">
+                {{ build_conf.status | status_display }}
             </span>
         </td>
-        <td>{{ build_conf.fields.last_build_date | date:'medium' }}</td>
+        <td>{{ build_conf.last_build_date | date:'medium' }}</td>
         <td>
             <button ng-click="rebuild_pkg(build_conf.pk)"
                     class="btn btn-default btn-xs"
@@ -77,7 +77,7 @@
             <button ng-click="autobuild_on_off(build_conf.pk)"
                     class="btn btn-default btn-xs"
                     title="Pause/Resume auto-build">
-                <span class="glyphicon glyphicon-{{ build_conf.fields.auto_build | play_pause }}"></span>
+                <span class="glyphicon glyphicon-{{ build_conf.auto_build | play_pause }}"></span>
             </button>
 
             <a href="/edit_build_conf/{{ build_conf.pk }}" type="button"

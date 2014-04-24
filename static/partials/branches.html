@@ -23,8 +23,8 @@
     <tbody>
     <tr ng-repeat="branch in branches | filter:query">
         <td>{{ branch.pk }}</td>
-        <td>{{ branch.fields.name }}</td>
-        <td>{{ branch.fields.path || "This is virtual branch" }}</td>
+        <td>{{ branch.name }}</td>
+        <td>{{ branch.path || "This is virtual branch" }}</td>
         <td>
             <a href="/edit_branch/{{ branch.pk }}" type="button" class="btn btn-default btn-xs"
                title="Settings">

@@ -22,8 +22,8 @@
     <tbody>
     <tr ng-repeat="mapping in mappings | filter:query">
         <td>{{ mapping.pk }}</td>
-        <td>{{ mapping.fields.orig_name }}</td>
-        <td>{{ mapping.fields.to_name }}</td>
+        <td>{{ mapping.orig_name }}</td>
+        <td>{{ mapping.to_name }}</td>
         <td>
             <a href="/edit_mapping/{{ mapping.pk }}" type="button" class="btn btn-default btn-xs"
                title="Settings">
