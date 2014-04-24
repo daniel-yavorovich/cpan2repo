@@ -47,7 +47,12 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
             }
         }
 
-
+        $scope.getData = function () {
+            $http.get('/api/build_confs/').success(function (data) {
+                $scope.build_confs = data;
+            });
+        };
+        setInterval($scope.getData, 5000);
     }]);
 
 
