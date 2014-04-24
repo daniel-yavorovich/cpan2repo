@@ -1,8 +1,7 @@
 import json
-from django.contrib import messages
+from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from cpan2repo.tasks import start_build
-from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from webui.models import Branch, BuildConfiguration, PackageNameMapping
 from django.http import HttpResponseRedirect, HttpResponse
@@ -12,21 +11,106 @@ from webui.forms import BranchForm, BuildConfigurationForm, PackageNameMappingFo
 # Build configurations views
 @login_required
 def index(request):
-    branches = Branch.objects.exclude(buildconfiguration=None).order_by('-pk')
-    remote_build_confs = BuildConfiguration.objects.filter(pkg_branch=None)
-
     return render(request, 'index.html', {
-        'branches': branches,
-        'remote_build_confs': remote_build_confs,
-        'current_page': 'build_conf',
     }, content_type="text/html")
 
 
-@login_required
-def build_confs_list(request):
-    build_confs = list(BuildConfiguration.objects.all().values('pk', 'name', 'version', 'status', 'last_build_date'))
+def branches(request):
     return HttpResponse(
-        json.dumps(build_confs),
+        serializers.serialize('json', Branch.objects.all()),
+        content_type="application/json"
+    )
+
+
+def build_confs(request):
+    return HttpResponse(
+        serializers.serialize('json', BuildConfiguration.objects.all()),
+        content_type="application/json"
+    )
+
+
+def mapping(request):
+    return HttpResponse(
+        serializers.serialize('json', PackageNameMapping.objects.all()),
+        content_type="application/json"
+    )
+
+
+@login_required
+def rebuild_package(request, build_conf_id):
+    build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
+    try:
+        start_build.delay(build_conf.pk)
+        message = {
+            "level": "success",
+            "text": 'Task for rebuild package "%s" in branch "%s" sent.' % (build_conf.name, build_conf.pkg_branch),
+        }
+    except Exception as e:
+        message = {
+            "level": "danger",
+            "text": 'Error send task for build package "%s" in branch "%s: %s".' % (
+                build_conf.name, build_conf.pkg_branch, e)
+        }
+
+    return HttpResponse(
+        json.dumps(message),
+        content_type="application/json"
+    )
+
+
+@login_required
+def autobuild_on_off(request, build_conf_id):
+    build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
+    build_conf.auto_build = not build_conf.auto_build
+    build_conf.save()
+
+    return HttpResponse(
+        serializers.serialize('json', [build_conf]),
+        content_type="application/json"
+    )
+
+
+@login_required
+def remove_build_conf(request, build_conf_id):
+    build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
+    message = {
+        "level": "success",
+        "text": "Package '%s' from branch '%s' removed!" % (build_conf.name, build_conf.pkg_branch)
+    }
+    build_conf.delete()
+
+    return HttpResponse(
+        json.dumps(message),
+        content_type="application/json"
+    )
+
+
+@login_required
+def remove_branch(request, branch_id):
+    branch = get_object_or_404(Branch, pk=branch_id)
+    message = {
+        "level": "success",
+        "text": "Branch '%s' removed!" % (branch.name)
+    }
+    branch.delete()
+
+    return HttpResponse(
+        json.dumps(message),
+        content_type="application/json"
+    )
+
+
+@login_required
+def remove_mapping(request, mapping_id):
+    mapping = get_object_or_404(PackageNameMapping, pk=mapping_id)
+    message = {
+        "level": "success",
+        "text": "Mapping '%s -> %s' removed!" % (mapping.orig_name, mapping.to_name)
+    }
+    mapping.delete()
+
+    return HttpResponse(
+        json.dumps(message),
         content_type="application/json"
     )
 
@@ -50,8 +134,7 @@ def add_build_conf(request, conf_type="deb"):
             # Set Remote Build virtual branch
             build_conf.pkg_branch = Branch.objects.get(pk=1)
             build_conf.save()
-        messages.add_message(request, messages.SUCCESS, 'Build configuration "%s" created.' % build_conf.name)
-        return HttpResponseRedirect(reverse('index'))
+        return HttpResponseRedirect("/")
 
     return render(request, 'edit_form.html', {
         'form': form,
@@ -78,7 +161,7 @@ def edit_build_conf(request, build_conf_id):
 
     if form.is_valid():
         build_conf = form.save()
-        messages.add_message(request, messages.SUCCESS, 'Build configuration "%s" saved.' % build_conf.name)
+        return HttpResponseRedirect("/")
 
     return render(request, 'edit_form.html', {
         'form': form,
@@ -98,61 +181,17 @@ def view_log(request, build_conf_id):
 
 
 @login_required
-def remove_build_conf(request, build_conf_id):
-    build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
-    build_conf.delete()
-
-    return HttpResponse(status=204)
-
-
-@login_required
-def autobuild_on_off(request, build_conf_id):
-    build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
-    build_conf.auto_build = not build_conf.auto_build
-    build_conf.save()
-
-    return HttpResponse(build_conf.auto_build)
-
-
-@login_required
-def rebuild_package(request, build_conf_id):
-    build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
-    try:
-        start_build.delay(build_conf.pk)
-        messages.add_message(request, messages.SUCCESS, 'Task for rebuild package "%s" in branch "%s" sent.' % (
-            build_conf.name, build_conf.pkg_branch))
-    except:
-        messages.add_message(request, messages.ERROR,
-                             'Internal error send task for build package "%s" in branch "%s".' % (
-                             build_conf.name, build_conf.pkg_branch))
-
-    return HttpResponseRedirect(reverse("index"))
-
-
-@login_required
 def rebuild_all_packages(request):
     try:
         for build_conf in BuildConfiguration.objects.all():
             start_build.delay(build_conf.pk)
-        messages.add_message(request, messages.SUCCESS, 'Task for rebuild all packages sent.')
     except:
-        messages.add_message(request, messages.ERROR, 'Internal error send task for rebuild all packages.')
+        pass
 
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect("/")
 
 
 # Branches views
-
-@login_required
-def branches_list(request):
-    branches = Branch.objects.all()
-
-    return render(request, 'branches_list.html', {
-        'branches': branches,
-        'current_page': 'branch',
-    }, content_type="text/html")
-
-
 @login_required
 def add_branch(request):
     if request.method == "POST":
@@ -161,9 +200,8 @@ def add_branch(request):
         form = BranchForm()
 
     if form.is_valid():
-        branch = form.save()
-        messages.add_message(request, messages.SUCCESS, 'Branch "%s" created.' % branch.name)
-        return HttpResponseRedirect(reverse('branches_list'))
+        form.save()
+        return HttpResponseRedirect('/#/branches')
 
     return render(request, 'edit_form.html', {
         'form': form,
@@ -181,47 +219,13 @@ def edit_branch(request, branch_id):
         form = BranchForm(instance=branch)
 
     if form.is_valid():
-        branch = form.save()
-        messages.add_message(request, messages.SUCCESS, 'Branch configuration "%s" saved.' % branch.name)
+        form.save()
+        return HttpResponseRedirect('/#/branches')
 
     return render(request, 'edit_form.html', {
         'form': form,
         'current_page': 'branch',
         'title': "Change Branch Configuration: %s" % branch.name,
-    }, content_type="text/html")
-
-
-@login_required
-def rebuild_packages_by_branch(request, branch_id):
-    branch = get_object_or_404(Branch, pk=branch_id)
-    try:
-        for build_conf in branch.buildconfiguration_set.all():
-            start_build.delay(build_conf.pk)
-        messages.add_message(request, messages.SUCCESS, 'Task for rebuild packages by branch "%s" sent.' % branch.name)
-    except:
-        messages.add_message(request, messages.ERROR,
-                             'Internal error send task for rebuild packages by branch "%s".' % branch.name)
-
-    return HttpResponseRedirect(reverse("index"))
-
-
-@login_required
-def remove_branch(request, branch_id):
-    branch = get_object_or_404(Branch, pk=branch_id)
-    branch.delete()
-
-    return HttpResponse(status=204)
-
-
-# Mapping views
-
-@login_required
-def mapping_list(request):
-    mappings = PackageNameMapping.objects.all()
-
-    return render(request, 'mappings_list.html', {
-        'mappings': mappings,
-        'current_page': 'mapping',
     }, content_type="text/html")
 
 
@@ -234,9 +238,7 @@ def add_mapping(request):
 
     if form.is_valid():
         mapping = form.save()
-        messages.add_message(request, messages.SUCCESS,
-                             'Mapping "%s => %s" created.' % (mapping.orig_name, mapping.to_name))
-        return HttpResponseRedirect(reverse('mapping_list'))
+        return HttpResponseRedirect("/#/mapping")
 
     return render(request, 'edit_form.html', {
         'form': form,
@@ -254,20 +256,11 @@ def edit_mapping(request, mapping_id):
         form = PackageNameMappingForm(instance=mapping)
 
     if form.is_valid():
-        mapping = form.save()
-        messages.add_message(request, messages.SUCCESS,
-                             'Mapping configuration "%s => %s" saved.' % (mapping.orig_name, mapping.to_name))
+        form.save()
+        return HttpResponseRedirect("/#/mapping")
 
     return render(request, 'edit_form.html', {
         'form': form,
         'current_page': 'mapping',
         'title': "Change Mapping Configuration: %s => %s" % (mapping.orig_name, mapping.to_name),
     }, content_type="text/html")
-
-
-@login_required
-def remove_mapping(request, mapping_id):
-    mapping = get_object_or_404(PackageNameMapping, pk=mapping_id)
-    mapping.delete()
-
-    return HttpResponse(status=204)

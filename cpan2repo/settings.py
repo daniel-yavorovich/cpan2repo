@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'djcelery',
     'bootstrap3',
+    'djangular',
     'south',
     'cpan2repo',
     'webui',
@@ -86,15 +87,14 @@ USE_L10N = True
 
 USE_TZ = True
 
-#SERIALIZATION_MODULES = {
-#    'json': 'wadofstuff.django.serializers.json'
-#}
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 
 # Celery
 BROKER_URL = 'amqp://guest:guest@localhost:5672/cpan2repo'

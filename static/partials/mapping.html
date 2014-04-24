@@ -1,0 +1,42 @@
+<h3>Package Mappings</h3>
+
+<a href="/add_mapping/" class="btn btn-primary">Add</a>
+
+<br><br>
+
+<div class="alert alert-{{ alert.level }}" ng-repeat="alert in alerts" ng-animate="'custom'">
+    <button type="button" class="close" ng-click="closeAlert($index)">&times;</button>
+    {{ alert.text }}
+</div>
+
+<input type="text" class="form-control" placeholder="Search" ng-model="query">
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Orig name</th>
+        <th>To name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="mapping in mappings | filter:query">
+        <td>{{ mapping.pk }}</td>
+        <td>{{ mapping.fields.orig_name }}</td>
+        <td>{{ mapping.fields.to_name }}</td>
+        <td>
+            <a href="/edit_mapping/{{ mapping.pk }}" type="button" class="btn btn-default btn-xs"
+               title="Settings">
+                <span class="glyphicon glyphicon-wrench"></span>
+            </a>
+
+            <button ng-click="remove_mapping(mapping.pk)"
+                    type="button"
+                    class="btn btn-default btn-xs"
+                    title="Remove">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>

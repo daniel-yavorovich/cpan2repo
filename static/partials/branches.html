@@ -1,0 +1,43 @@
+<h3>Branches</h3>
+
+<a href="/add_branch/" class="btn btn-primary">Add</a>
+
+<br><br>
+
+<div class="alert alert-{{ alert.level }}" ng-repeat="alert in alerts" ng-animate="'custom'">
+    <button type="button" class="close" ng-click="closeAlert($index)">&times;</button>
+    {{ alert.text }}
+</div>
+
+<input type="text" class="form-control" placeholder="Search" ng-model="query">
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Path</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="branch in branches | filter:query">
+        <td>{{ branch.pk }}</td>
+        <td>{{ branch.fields.name }}</td>
+        <td>{{ branch.fields.path || "This is virtual branch" }}</td>
+        <td>
+            <a href="/edit_branch/{{ branch.pk }}" type="button" class="btn btn-default btn-xs"
+               title="Settings">
+                <span class="glyphicon glyphicon-wrench"></span>
+            </a>
+
+            <button ng-click="remove_branch(branch.pk)"
+                    type="button"
+                    class="btn btn-default btn-xs"
+                    title="Remove">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>
