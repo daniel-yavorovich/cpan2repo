@@ -5,8 +5,7 @@
 var builderApp = angular.module('builerApp', [
     'ngRoute',
     'builderControllers',
-    'builderServices',
-    'builderFilters',
+    'builderFilters'
 ]);
 
 builderApp.config(['$routeProvider',
