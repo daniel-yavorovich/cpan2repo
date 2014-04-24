@@ -46,7 +46,7 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http', 'BuildConf
                 }
             });
         };
-        setInterval($scope.getData, 1000);
+        setInterval($scope.getData, 5000);
     }]);
 
 
@@ -75,7 +75,7 @@ builderControllers.controller('BranchestListCtrl', ['$scope', '$http', 'Branch',
                 }
             });
         };
-        setInterval($scope.getData, 1000);
+        setInterval($scope.getData, 5000);
     }]);
 
 builderControllers.controller('MappingCtrl', ['$scope', '$http', 'Mapping',
@@ -103,5 +103,5 @@ builderControllers.controller('MappingCtrl', ['$scope', '$http', 'Mapping',
                 }
             });
         };
-        setInterval($scope.getData, 1000);
+        setInterval($scope.getData, 5000);
     }]);
