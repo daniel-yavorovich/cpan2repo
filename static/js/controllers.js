@@ -6,7 +6,12 @@ var builderControllers = angular.module('builderControllers', []);
 
 builderControllers.controller('DebBuildListCtrl', ['$scope', '$http', 'BuildConf',
     function ($scope, $http, BuildConf) {
-        $scope.build_confs = BuildConf.query();
+        $http.get('/api/build_confs/').success(function (data) {
+            if ($scope.build_confs != data) {
+                $scope.build_confs = data;
+            }
+        });
+
         $scope.orderProp = '-fields.status';
         $scope.alerts = [];
 
