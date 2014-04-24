@@ -55,7 +55,7 @@ angular.module('builderFilters', []).
     }).
     filter('play_pause', function () {
         return function (on_off) {
-            return on_off ? 'play' : 'pause';
+            return on_off ? 'pause' : 'play';
         }
     }).
     filter('play_pause_tr', function () {
