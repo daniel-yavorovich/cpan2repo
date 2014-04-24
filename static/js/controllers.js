@@ -38,6 +38,11 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
         $scope.remove_build_conf = function (build_conf_id) {
             var is_confirm = confirm('Are you sure remove build config #' + build_conf_id + '?');
             if (is_confirm) {
+                for (var build_conf in $scope.build_confs) {
+                    if ($scope.build_confs[build_conf].pk == build_conf_id) {
+                        $scope.build_confs[build_conf].fields.status = 3;
+                    }
+                }
                 $http.get('/api/remove_build_conf/' + build_conf_id).success(function (data) {
                     $scope.alerts.push(data);
                 });
@@ -46,9 +51,7 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
 
         $scope.getData = function () {
             $http.get('/api/build_confs/').success(function (data) {
-                if ($scope.build_confs != data) {
-                    $scope.build_confs = data;
-                }
+                $scope.build_confs = data;
             });
         };
         setInterval($scope.getData, 5000);
@@ -80,9 +83,7 @@ builderControllers.controller('BranchestListCtrl', ['$scope', '$http',
 
         $scope.getData = function () {
             $http.get('/api/branches/').success(function (data) {
-                if ($scope.branches != data) {
-                    $scope.branches = data;
-                }
+                $scope.branches = data;
             });
         };
         setInterval($scope.getData, 5000);
@@ -112,9 +113,7 @@ builderControllers.controller('MappingCtrl', ['$scope', '$http',
 
         $scope.getData = function () {
             $http.get('/api/mapping/').success(function (data) {
-                if ($scope.mappings != data) {
-                    $scope.mappings = data;
-                }
+                $scope.mappings = data;
             });
         };
         setInterval($scope.getData, 5000);
