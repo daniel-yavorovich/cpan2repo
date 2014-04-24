@@ -40,7 +40,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'djcelery',
     'bootstrap3',
-    'djangular',
     'south',
     'cpan2repo',
     'webui',
