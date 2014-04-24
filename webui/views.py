@@ -24,11 +24,22 @@ def branches(request):
 
 
 def build_confs(request):
+    data = []
+    for build_conf in BuildConfiguration.objects.all():
+        if build_conf.last_build_date:
+            build_conf.last_build_date = build_conf.last_build_date.strftime("%s")
+        data.append({
+            "pk": build_conf.pk,
+            "name": build_conf.name,
+            "pkg_branch__name": build_conf.pkg_branch.name,
+            "version": build_conf.version,
+            "status": build_conf.status,
+            "last_build_date": build_conf.last_build_date,
+            "auto_build": build_conf.auto_build
+        })
+
     return HttpResponse(
-        json.dumps(
-            list(BuildConfiguration.objects.values("pk", "name", "pkg_branch__name", "version", "status",
-                                                   "last_build_date", "auto_build"))
-        ),
+        json.dumps(data),
         content_type="application/json"
     )
 
