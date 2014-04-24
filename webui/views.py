@@ -27,7 +27,7 @@ def build_confs(request):
     data = []
     for build_conf in BuildConfiguration.objects.all():
         if build_conf.last_build_date:
-            build_conf.last_build_date = build_conf.last_build_date.strftime("%s")
+            build_conf.last_build_date = build_conf.last_build_date.strftime("%Y-%m-%dT%H:%M:%S.%f")
         data.append({
             "pk": build_conf.pk,
             "name": build_conf.name,
