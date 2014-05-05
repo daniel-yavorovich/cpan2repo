@@ -287,7 +287,8 @@ Description: {description}
     if re.search("dpkg-deb: building package.*in", build_output):
         build_conf.status = 1
         logging.info("Build package %s done." % PACKAGE_NAME)
-        shutil.rmtree(settings.TMP_BUILD_DIR + "/" + PKG_BUILD_DIR)
+        tmp_build_dir = settings.TMP_BUILD_DIR + "/" + PKG_BUILD_DIR
+        commands.getstatusoutput("rm -rf %s" % tmp_build_dir)
     else:
         build_conf.status = 4
         logging.error(build_output)
