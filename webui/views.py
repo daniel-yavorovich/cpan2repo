@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 from django.contrib.auth.decorators import login_required
 from cpan2repo.tasks import start_build
