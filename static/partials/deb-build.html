@@ -1,105 +1,108 @@
 <h3>Build configurations</h3>
+<div ng-controller="DebBuildListCtrl">
 
+    <a href="/add_build_conf/" class="btn btn-primary">Add</a>
+    <button class="btn btn-success" ng-click="global_autobuild_on()">Global autobuild enable</button>
+    <button class="btn btn-danger" ng-click="global_autobuild_off()">Global autobuild disable</button>
 
-<a href="/add_build_conf/" class="btn btn-primary">Add</a>
+    <br><br>
 
-<br><br>
+    <div class="alert alert-{{ alert.level }}" ng-repeat="alert in alerts" ng-animate="'custom'">
+        <button type="button" class="close" ng-click="closeAlert($index)">&times;</button>
+        {{ alert.text }}
+    </div>
 
-<div class="alert alert-{{ alert.level }}" ng-repeat="alert in alerts" ng-animate="'custom'">
-    <button type="button" class="close" ng-click="closeAlert($index)">&times;</button>
-    {{ alert.text }}
-</div>
+    <input type="text" class="form-control" placeholder="Search" ng-model="query">
 
-<input type="text" class="form-control" placeholder="Search" ng-model="query">
-
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th>
-            #
-            <a href="" ng-click="orderProp = 'pk'"><span class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-pk'"><span class="glyphicon glyphicon-chevron-down"></span></a>
-        </th>
-        <th>
-            Package
-            <a href="" ng-click="orderProp = 'name'"><span class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-name'"><span class="glyphicon glyphicon-chevron-down"></span></a>
-        </th>
-        <th>
-            Branch
-            <a href="" ng-click="orderProp = 'git_branch'"><span
-                    class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-git_branch'"><span
-                    class="glyphicon glyphicon-chevron-down"></span></a>
-        </th>
-        <th>
-            Version
-            <a href="" ng-click="orderProp = 'version'"><span class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-version'"><span
-                    class="glyphicon glyphicon-chevron-down"></span></a>
-        </th>
-        <th>
-            Status
-            <a href="" ng-click="orderProp = 'status'"><span class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-status'"><span
-                    class="glyphicon glyphicon-chevron-down"></span></a>
-        </th>
-        <th>
-            Last build
-            <a href="" ng-click="orderProp = 'last_build_date'"><span
-                    class="glyphicon glyphicon-chevron-up"></span></a>
-            <a href="" ng-click="orderProp = '-last_build_date'"><span
-                    class="glyphicon glyphicon-chevron-down"></span></a>
-        </th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="build_conf in build_confs | filter:query | orderBy:orderProp"
-        class="{{ build_conf.auto_build | play_pause_tr }}danger">
-        <td>{{ build_conf.pk }}</td>
-        <td>{{ build_conf.name }}</td>
-        <td>{{ build_conf.pkg_branch__name }}</td>
-        <td>{{ build_conf.version }}</td>
-        <td>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                #
+                <a href="" ng-click="orderProp = 'pk'"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                <a href="" ng-click="orderProp = '-pk'"><span class="glyphicon glyphicon-chevron-down"></span></a>
+            </th>
+            <th>
+                Package
+                <a href="" ng-click="orderProp = 'name'"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                <a href="" ng-click="orderProp = '-name'"><span class="glyphicon glyphicon-chevron-down"></span></a>
+            </th>
+            <th>
+                Branch
+                <a href="" ng-click="orderProp = 'git_branch'"><span
+                        class="glyphicon glyphicon-chevron-up"></span></a>
+                <a href="" ng-click="orderProp = '-git_branch'"><span
+                        class="glyphicon glyphicon-chevron-down"></span></a>
+            </th>
+            <th>
+                Version
+                <a href="" ng-click="orderProp = 'version'"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                <a href="" ng-click="orderProp = '-version'"><span
+                        class="glyphicon glyphicon-chevron-down"></span></a>
+            </th>
+            <th>
+                Status
+                <a href="" ng-click="orderProp = 'status'"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                <a href="" ng-click="orderProp = '-status'"><span
+                        class="glyphicon glyphicon-chevron-down"></span></a>
+            </th>
+            <th>
+                Last build
+                <a href="" ng-click="orderProp = 'last_build_date'"><span
+                        class="glyphicon glyphicon-chevron-up"></span></a>
+                <a href="" ng-click="orderProp = '-last_build_date'"><span
+                        class="glyphicon glyphicon-chevron-down"></span></a>
+            </th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="build_conf in build_confs | filter:query | orderBy:orderProp"
+            class="{{ build_conf.auto_build | play_pause_tr }}danger">
+            <td>{{ build_conf.pk }}</td>
+            <td>{{ build_conf.name }}</td>
+            <td>{{ build_conf.pkg_branch__name }}</td>
+            <td>{{ build_conf.version }}</td>
+            <td>
             <span class="label label-{{ build_conf.status | status_label_type }}">
                 {{ build_conf.status | status_display }}
             </span>
-        </td>
-        <td>{{ build_conf.last_build_date | timeago}}</td>
-        <td>
-            <button ng-click="rebuild_pkg(build_conf.pk)"
-                    class="btn btn-default btn-xs"
-                    title="Rebuild">
-                <span class="glyphicon glyphicon-refresh"></span>
-            </button>
+            </td>
+            <td>{{ build_conf.last_build_date | timeago }}</td>
+            <td>
+                <button ng-click="rebuild_pkg(build_conf.pk)"
+                        class="btn btn-default btn-xs"
+                        title="Rebuild">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
 
-            <button ng-click="autobuild_on_off(build_conf.pk)"
-                    class="btn btn-default btn-xs"
-                    title="Pause/Resume auto-build">
-                <span class="glyphicon glyphicon-{{ build_conf.auto_build | play_pause }}"></span>
-            </button>
+                <button ng-click="autobuild_on_off(build_conf.pk)"
+                        class="btn btn-default btn-xs"
+                        title="Pause/Resume auto-build">
+                    <span class="glyphicon glyphicon-{{ build_conf.auto_build | play_pause }}"></span>
+                </button>
 
-            <a href="/edit_build_conf/{{ build_conf.pk }}" type="button"
-               class="btn btn-default btn-xs"
-               title="Settings">
-                <span class="glyphicon glyphicon-wrench"></span>
-            </a>
+                <a href="/edit_build_conf/{{ build_conf.pk }}" type="button"
+                   class="btn btn-default btn-xs"
+                   title="Settings">
+                    <span class="glyphicon glyphicon-wrench"></span>
+                </a>
 
-            <button type="button"
-                    ng-confirm-click="Are you sure?"
-                    ng-click="remove_build_conf(build_conf.pk)"
-                    class="btn btn-default btn-xs"
-                    title="Remove">
-                <span class="glyphicon glyphicon-remove"></span>
-            </button>
+                <button type="button"
+                        ng-confirm-click="Are you sure?"
+                        ng-click="remove_build_conf(build_conf.pk)"
+                        class="btn btn-default btn-xs"
+                        title="Remove">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
 
-            <a href="/view_log/{{ build_conf.pk }}" type="button"
-               class="btn btn-default btn-xs"
-               title="Last build log">
-                <span class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+                <a href="/view_log/{{ build_conf.pk }}" type="button"
+                   class="btn btn-default btn-xs"
+                   title="Last build log">
+                    <span class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

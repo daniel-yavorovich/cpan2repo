@@ -33,6 +33,22 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
             });
         }
 
+        $scope.global_autobuild_on = function () {
+            $http.get('/api/global_autobuild_on/').success(function (data) {
+                for (var build_conf in $scope.build_confs) {
+                    $scope.build_confs[build_conf].auto_build = true;
+                }
+            });
+        }
+
+        $scope.global_autobuild_off = function () {
+            $http.get('/api/global_autobuild_off/').success(function (data) {
+                for (var build_conf in $scope.build_confs) {
+                    $scope.build_confs[build_conf].auto_build = false;
+                }
+            });
+        }
+
         $scope.remove_build_conf = function (build_conf_id) {
             var is_confirm = confirm('Are you sure remove build config #' + build_conf_id + '?');
             if (is_confirm) {

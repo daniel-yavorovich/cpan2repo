@@ -90,6 +90,25 @@ def autobuild_on_off(request, build_conf_id):
 
 
 @login_required
+def global_autobuild_on(request):
+    BuildConfiguration.objects.update(auto_build=True)
+
+    return HttpResponse(
+        json.dumps({"gobal_autobuild_status": True}),
+        content_type="application/json"
+    )
+
+@login_required
+def global_autobuild_off(request):
+    BuildConfiguration.objects.update(auto_build=False)
+
+    return HttpResponse(
+        json.dumps({"gobal_autobuild_status": False}),
+        content_type="application/json"
+    )
+
+
+@login_required
 def remove_build_conf(request, build_conf_id):
     build_conf = get_object_or_404(BuildConfiguration, pk=build_conf_id)
     message = {

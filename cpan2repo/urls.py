@@ -36,6 +36,8 @@ urlpatterns += patterns('webui.views',
 
                         url(r'^api/rebuild_package/(?P<build_conf_id>\d+)$', 'rebuild_package'),
                         url(r'^api/autobuild_on_off/(?P<build_conf_id>\d+)$', 'autobuild_on_off'),
+                        url(r'^api/global_autobuild_on/$', 'global_autobuild_on'),
+                        url(r'^api/global_autobuild_off/$', 'global_autobuild_off'),
                         url(r'^api/remove_build_conf/(?P<build_conf_id>\d+)$', 'remove_build_conf'),
                         url(r'^api/remove_branch/(?P<branch_id>\d+)$', 'remove_branch'),
                         url(r'^api/remove_mapping/(?P<mapping_id>\d+)$', 'remove_mapping'),
