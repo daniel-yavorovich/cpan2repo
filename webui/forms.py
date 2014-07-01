@@ -30,7 +30,7 @@ class BuildConfigurationForm(BaseForm):
     class Meta:
         model = BuildConfiguration
         fields = ['conf_type', 'name', 'git_url', 'git_user', 'git_pass',
-                  'git_branch', 'pkg_branch', 'install_root',
+                  'git_branch', 'git_subdir', 'pkg_branch', 'install_root',
                   'build_script', 'pre_install_script',
                   'post_install_script', 'depends_list',
                   'build_on_commit_in', 'auto_build']
