@@ -31,6 +31,8 @@ class BuildConfiguration(models.Model):
     git_user = models.CharField(max_length=100)
     git_pass = models.CharField(max_length=100)
     git_branch = models.CharField(max_length=100)
+    git_subdir = models.CharField(max_length=100, null=True, blank=True)
+    git_subdir_hash = models.CharField(max_length=100, null=True, blank=True)
     auto_build = models.BooleanField(default=False, blank=True)
     build_script = models.TextField(null=True, blank=True)
     build_log = models.TextField(null=True, blank=True)

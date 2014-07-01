@@ -2,18 +2,18 @@
 from __future__ import absolute_import
 import os
 import re
-import shutil
 import logging
 import commands
 import datetime
 import paramiko
 from celery import shared_task
 from django.conf import settings
+from cpan2repo.utils import dir_digest
 from cpan2repo.cpanm import get_pkg_depends
 from cpan2repo.metacpan import get_release_info
+from cpan2repo.cpanm import check_standard_module
 from cpan2repo.models import Package, ExcludePackage
 from webui.models import BuildConfiguration, PackageNameMapping
-from cpan2repo.cpanm import check_standard_module
 
 
 def get_git_url(url_base, user, password):
@@ -139,8 +139,8 @@ def build_pkg(build_conf_id):
 
     build_conf = BuildConfiguration.objects.get(pk=build_conf_id)
 
+    back_status = build_conf.status
     build_conf.status = 2
-    build_conf.version += 1
     build_conf.save()
 
     PKG_BUILD_DIR = "%s_%s_%s" % (build_conf.name, build_conf.pk, build_conf.version)
@@ -167,11 +167,24 @@ def build_pkg(build_conf_id):
         stop_by_error(build_conf, git_clone_res[1])
         return False
 
-    try:
-        os.chdir(PKG_BUILD_DIR)
-    except Exception as e:
-        stop_by_error(build_conf, e)
-        return False
+    if build_conf.git_subdir:
+        try:
+            subdir_path = PKG_BUILD_DIR + build_conf.git_subdir
+            os.chdir(subdir_path)
+        except Exception as e:
+            stop_by_error(build_conf, e)
+            return False
+
+        if dir_digest(subdir_path) == build_conf.git_subdir_hash:
+            build_conf.status = back_status
+            build_conf.save()
+            return False
+    else:
+        try:
+            os.chdir(PKG_BUILD_DIR)
+        except Exception as e:
+            stop_by_error(build_conf, e)
+            return False
 
     if build_conf.build_script:
         buildscriptfile_path = "/tmp/buildscript_%d-%d.sh" % (build_conf.pk, build_conf.version)
@@ -186,6 +199,7 @@ def build_pkg(build_conf_id):
             return False
 
     build_conf.last_commit_id = last_commit_id
+    build_conf.version += 1
     build_conf.save()
 
     # Create package dirs
