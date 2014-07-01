@@ -169,7 +169,7 @@ def build_pkg(build_conf_id):
 
     if build_conf.git_subdir:
         try:
-            subdir_path = PKG_BUILD_DIR + build_conf.git_subdir
+            subdir_path = "{0}/{1}".format(PKG_BUILD_DIR, build_conf.git_subdir)
             os.chdir(subdir_path)
         except Exception as e:
             stop_by_error(build_conf, e)
