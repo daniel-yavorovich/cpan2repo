@@ -31,11 +31,11 @@ Deploy cpan2repo
 
     useradd -s /bin/bash -m -g users agent
     cd /home/agent
-    cp bin/check_core_module.pl /usr/local/bin/check_core_module.pl
     git clone https://github.com/daniel-yavorovich/cpan2repo.git
     pip install -r cpan2repo/requirements.txt
     su - agent
     cd cpan2repo
+    sudo cp bin/check_core_module.pl /usr/local/bin/check_core_module.pl
     tee cpan2repo/local_settings.py << EOF
     DATABASES = {
        'default': {
@@ -56,19 +56,19 @@ Deploy cpan2repo
     exit
 
     apt-get -y install gunicorn
-    tee /etc/gunicorn.d/cpan2repo << EOF
-    CONFIG = {
-        'mode': 'wsgi',
-        'working_dir': '/home/agent/cpan2repo',
-        'user': 'www-data',
-        'group': 'www-data',
-        'args': (
+tee /etc/gunicorn.d/cpan2repo << EOF
+CONFIG = {
+    'mode': 'wsgi',
+    'working_dir': '/home/agent/cpan2repo',
+    'user': 'www-data',
+    'group': 'www-data',
+    'args': (
         '--bind=127.0.0.1:8081',
         '--workers=4',
         'cpan2repo.wsgi',
     ),
-    }
-    EOF
+}
+EOF
     service gunicorn restart
 
     nginx=stable     use nginx=development for latest development version
