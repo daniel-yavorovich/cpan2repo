@@ -8,6 +8,11 @@ cpan2repo - developed within company Adcamp and Pult Group
 
 # Installation
 
+Requirements
+------------
+
+apt-get install -y dh-make-perl cpanminus
+
 Create MySQL database and user
 ------------------------------
 
