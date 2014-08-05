@@ -109,7 +109,7 @@ def make_deb_from_cpan(cpan_name, pass_ignore=False):
     pkg.save()
 
     # Formulation build command
-    build_command = "dh-make-perl --cpan %s --build --recursive --core-ok --pkg-perl --arch all" % cpan_name
+    build_command = "dh-make-perl --exclude perllocal.pod --cpan %s --build --recursive --core-ok --pkg-perl --arch all" % cpan_name
     if deb_depends:
         build_command += " --depends %s" % ",".join(deb_depends)
 
