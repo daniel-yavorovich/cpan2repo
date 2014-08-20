@@ -10,7 +10,7 @@ builderControllers.controller('DebBuildListCtrl', ['$scope', '$http',
             $scope.build_confs = data;
         });
 
-        $scope.orderProp = '-status';
+        $scope.orderProp = 'pk';
         $scope.alerts = [];
 
         $scope.closeAlert = function (index) {
