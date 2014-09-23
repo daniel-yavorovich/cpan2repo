@@ -42,4 +42,6 @@ urlpatterns += patterns('webui.views',
                         url(r'^api/remove_build_conf/(?P<build_conf_id>\d+)$', 'remove_build_conf'),
                         url(r'^api/remove_branch/(?P<branch_id>\d+)$', 'remove_branch'),
                         url(r'^api/remove_mapping/(?P<mapping_id>\d+)$', 'remove_mapping'),
+
+                        url(r'^api/get_pkg_ver/(.*)/(.*)$', 'get_pkg_version')
 )

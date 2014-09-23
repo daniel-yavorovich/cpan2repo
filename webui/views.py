@@ -303,3 +303,10 @@ def edit_mapping(request, mapping_id):
         'current_page': 'mapping',
         'title': "Change Mapping Configuration: %s => %s" % (mapping.orig_name, mapping.to_name),
     }, content_type="text/html")
+
+
+def get_pkg_version(request, branch_name, pkg_name):
+    branch = get_object_or_404(Branch, name=branch_name)
+    pkg = get_object_or_404(BuildConfiguration, name=pkg_name, pkg_branch=branch)
+
+    return HttpResponse(str(pkg.version))
