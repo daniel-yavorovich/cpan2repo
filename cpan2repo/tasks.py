@@ -6,10 +6,9 @@ import logging
 import commands
 import datetime
 import paramiko
-from dirtools import Dir
+import dirtools
 from celery import shared_task
 from django.conf import settings
-from cpan2repo.utils import dir_digest
 from cpan2repo.cpanm import get_pkg_depends
 from cpan2repo.metacpan import get_release_info
 from cpan2repo.cpanm import check_standard_module
@@ -176,7 +175,7 @@ def build_pkg(build_conf_id):
             stop_by_error(build_conf, e)
             return False
 
-        git_subdir_hash = Dir(subdir_path).hash()
+        git_subdir_hash = dirtools.Dir(subdir_path).hash(dirtools.filehash)
 
         print "{0}: {1}".format(subdir_path, git_subdir_hash)
 
