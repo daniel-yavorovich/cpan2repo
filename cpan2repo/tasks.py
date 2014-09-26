@@ -167,7 +167,7 @@ def build_pkg(build_conf_id):
         return False
 
     if build_conf.git_subdir:
-        subdir_path = "{0}/{1}".format(PKG_BUILD_DIR, build_conf.git_subdir)
+        subdir_path = "{0}/{1}".format(settings.TMP_BUILD_DIR, PKG_BUILD_DIR, build_conf.git_subdir)
 
         try:
             os.chdir(subdir_path)
@@ -175,7 +175,7 @@ def build_pkg(build_conf_id):
             stop_by_error(build_conf, e)
             return False
 
-        git_subdir_hash = dir_digest(os.getcwd())
+        git_subdir_hash = dir_digest(subdir_path)
 
         if build_conf.git_subdir_hash == git_subdir_hash:
             build_conf.status = 1  # Success status
