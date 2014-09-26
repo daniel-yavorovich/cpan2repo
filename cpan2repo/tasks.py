@@ -357,7 +357,6 @@ def start_build(build_conf_id, current_id=None):
     print("Package %s updates. Run rebuild task." % build_conf.name)
 
     build_conf.status = 2
-    build_conf.version += 1
 
     if current_id:
         build_conf.last_commit_id = current_id
