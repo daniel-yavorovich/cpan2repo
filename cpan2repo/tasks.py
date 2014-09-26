@@ -139,7 +139,6 @@ def build_pkg(build_conf_id):
 
     build_conf = BuildConfiguration.objects.get(pk=build_conf_id)
 
-    back_status = build_conf.status
     build_conf.status = 2
     build_conf.save()
 
@@ -176,10 +175,10 @@ def build_pkg(build_conf_id):
             stop_by_error(build_conf, e)
             return False
 
-        git_subdir_hash = dir_digest(subdir_path)
+        git_subdir_hash = dir_digest(os.getcwd())
 
         if build_conf.git_subdir_hash == git_subdir_hash:
-            build_conf.status = back_status
+            build_conf.status = 1  # Success status
             build_conf.save()
             return False
 
