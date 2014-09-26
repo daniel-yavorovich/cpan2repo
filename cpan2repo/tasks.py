@@ -167,8 +167,7 @@ def build_pkg(build_conf_id):
         return False
 
     if build_conf.git_subdir:
-        tmp_build_dir = "{0}/{1}/".format(settings.TMP_BUILD_DIR, PKG_BUILD_DIR)
-        subdir_path = "{0}/{1}".format(tmp_build_dir, build_conf.git_subdir)
+        subdir_path = "{0}/{1}/{2}".format(settings.TMP_BUILD_DIR, PKG_BUILD_DIR, build_conf.git_subdir)
 
         try:
             os.chdir(subdir_path)
@@ -181,11 +180,8 @@ def build_pkg(build_conf_id):
         print "{0}: {1}".format(subdir_path, git_subdir_hash)
 
         if build_conf.git_subdir_hash == git_subdir_hash:
-            logging.info("Subdir in package {0} already build")
             build_conf.status = 1  # Success status
-            build_conf.last_commit_id = last_commit_id
             build_conf.save()
-            commands.getstatusoutput("rm -rf %s" % tmp_build_dir)
             return False
 
         build_conf.git_subdir_hash = git_subdir_hash
