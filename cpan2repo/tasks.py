@@ -6,6 +6,7 @@ import logging
 import commands
 import datetime
 import paramiko
+from dirtools import Dir
 from celery import shared_task
 from django.conf import settings
 from cpan2repo.utils import dir_digest
@@ -175,7 +176,7 @@ def build_pkg(build_conf_id):
             stop_by_error(build_conf, e)
             return False
 
-        git_subdir_hash = dir_digest(subdir_path)
+        git_subdir_hash = Dir(subdir_path).hash()
 
         if build_conf.git_subdir_hash == git_subdir_hash:
             build_conf.status = 1  # Success status

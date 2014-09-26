@@ -14,3 +14,4 @@ wsgiref==0.1.2
 GitPython==0.1.7
 South==0.8.4
 paramiko==1.13.0
+dirtools==0.2.0
