@@ -178,6 +178,8 @@ def build_pkg(build_conf_id):
 
         git_subdir_hash = Dir(subdir_path).hash()
 
+        print "{0}: {1}".format(subdir_path, git_subdir_hash)
+
         if build_conf.git_subdir_hash == git_subdir_hash:
             build_conf.status = 1  # Success status
             build_conf.version -= 1  # Decrement version
