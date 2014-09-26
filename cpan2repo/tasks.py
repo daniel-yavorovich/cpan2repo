@@ -167,7 +167,7 @@ def build_pkg(build_conf_id):
         return False
 
     if build_conf.git_subdir:
-        subdir_path = "{0}/{1}".format(settings.TMP_BUILD_DIR, PKG_BUILD_DIR, build_conf.git_subdir)
+        subdir_path = "{0}/{1}/{2}".format(settings.TMP_BUILD_DIR, PKG_BUILD_DIR, build_conf.git_subdir)
 
         try:
             os.chdir(subdir_path)
