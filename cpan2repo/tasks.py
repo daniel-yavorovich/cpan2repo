@@ -183,6 +183,7 @@ def build_pkg(build_conf_id):
         if build_conf.git_subdir_hash == git_subdir_hash:
             logging.info("Subdir in package {0} already build")
             build_conf.status = 1  # Success status
+            build_conf.last_commit_id = last_commit_id
             build_conf.save()
             commands.getstatusoutput("rm -rf %s" % tmp_build_dir)
             return False
