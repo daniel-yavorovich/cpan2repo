@@ -168,8 +168,9 @@ def build_pkg(build_conf_id):
         return False
 
     if build_conf.git_subdir:
+        subdir_path = "{0}/{1}".format(PKG_BUILD_DIR, build_conf.git_subdir)
+
         try:
-            subdir_path = "{0}/{1}".format(PKG_BUILD_DIR, build_conf.git_subdir)
             os.chdir(subdir_path)
         except Exception as e:
             stop_by_error(build_conf, e)
@@ -177,12 +178,12 @@ def build_pkg(build_conf_id):
 
         git_subdir_hash = dir_digest(subdir_path)
 
-        if git_subdir_hash == build_conf.git_subdir_hash:
+        if build_conf.git_subdir_hash == git_subdir_hash:
             build_conf.status = back_status
             build_conf.save()
             return False
-        else:
-            build_conf.git_subdir_hash = git_subdir_hash
+
+        build_conf.git_subdir_hash = git_subdir_hash
     else:
         try:
             os.chdir(PKG_BUILD_DIR)
