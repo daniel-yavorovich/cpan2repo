@@ -179,6 +179,7 @@ def build_pkg(build_conf_id):
 
         if build_conf.git_subdir_hash == git_subdir_hash:
             build_conf.status = 1  # Success status
+            build_conf.version -= 1  # Decrement version
             build_conf.save()
             return False
 
