@@ -99,7 +99,6 @@ def make_deb_from_cpan(cpan_name, pass_ignore=False):
             continue
 
         deb_depends.append(mod_name["deb_name"])
-        print "Depend for %s: %s" % (cpan_name, mod_name["deb_name"])
 
         if not Package.objects.filter(name=mod_name["deb_name"]):
             make_deb_from_cpan.delay(mod_name["orig_module_name"])
@@ -176,8 +175,6 @@ def build_pkg(build_conf_id):
             return False
 
         git_subdir_hash = dirtools.Dir(subdir_path).hash(dirtools.filehash)
-
-        print "{0}: {1}".format(subdir_path, git_subdir_hash)
 
         if build_conf.git_subdir_hash == git_subdir_hash:
             build_conf.status = 1  # Success status
