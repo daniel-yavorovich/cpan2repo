@@ -182,6 +182,12 @@ def build_pkg(build_conf_id):
         if build_conf.git_subdir_hash == git_subdir_hash:
             build_conf.status = 1  # Success status
             build_conf.save()
+
+            os.chdir(settings.TMP_BUILD_DIR)
+
+            logging.info("Subdir package %s already built." % PACKAGE_NAME)
+            tmp_build_dir = settings.TMP_BUILD_DIR + "/" + PKG_BUILD_DIR
+            commands.getstatusoutput("rm -rf %s" % tmp_build_dir)
             return False
 
         build_conf.git_subdir_hash = git_subdir_hash
