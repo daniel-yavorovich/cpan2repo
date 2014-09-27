@@ -32,6 +32,11 @@ def stop_by_error(build_conf, error_log):
     build_conf.build_log = str(error_log)
     build_conf.save()
 
+    PKG_BUILD_DIR = "%s_%s_%s" % (build_conf.name, build_conf.pk, build_conf.version)
+
+    tmp_build_dir = settings.TMP_BUILD_DIR + "/" + PKG_BUILD_DIR
+    commands.getstatusoutput("rm -rf %s" % tmp_build_dir)
+
 
 def get_ref_id(build_conf):
     git_url = get_git_url(build_conf.git_url, build_conf.git_user, build_conf.git_pass)
