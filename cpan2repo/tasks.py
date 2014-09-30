@@ -35,6 +35,8 @@ def stop_by_error(build_conf, error_log):
 
     PKG_BUILD_DIR = "%s_%s_%s" % (build_conf.name, build_conf.pk, build_conf.version)
 
+    os.chdir(settings.TMP_BUILD_DIR)
+
     tmp_build_dir = settings.TMP_BUILD_DIR + "/" + PKG_BUILD_DIR
     commands.getstatusoutput("rm -rf %s" % tmp_build_dir)
 
