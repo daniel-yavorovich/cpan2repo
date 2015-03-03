@@ -28,7 +28,6 @@ def get_git_url(url_base, user, password):
 
 def stop_by_error(build_conf, error_log):
     build_conf.status = 4
-    build_conf.auto_build = False
     build_conf.build_log = str(error_log)
     build_conf.git_subdir_hash = ""
     build_conf.save()
