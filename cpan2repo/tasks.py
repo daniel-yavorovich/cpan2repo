@@ -146,6 +146,7 @@ def build_pkg(build_conf_id):
     build_conf = BuildConfiguration.objects.get(pk=build_conf_id)
 
     build_conf.status = 2
+    build_conf.version += 1
     build_conf.save()
 
     PKG_BUILD_DIR = "%s_%s_%s" % (build_conf.name, build_conf.pk, build_conf.version)
@@ -214,7 +215,6 @@ def build_pkg(build_conf_id):
             return False
 
     build_conf.last_commit_id = last_commit_id
-    build_conf.version += 1
     build_conf.save()
 
     # Create package dirs
