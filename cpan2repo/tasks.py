@@ -153,14 +153,13 @@ def build_pkg(build_conf_id):
 
     os.chdir(settings.TMP_BUILD_DIR)
 
-    git_url = get_git_url(build_conf.git_url, build_conf.git_user, build_conf.git_pass)
-
     last_commit_id = get_ref_id(build_conf)
 
     if not last_commit_id:
         return False
 
     # Checkout git repo
+    git_url = "git@bitbucket.org:{0}".format(re.search("bitbucket.org/(.*)$", build_conf.git_url).group(1))
     git_clone_res = commands.getstatusoutput(
         "git clone -b {git_branch} {git_url} {pkg_build_dir}".format(
             git_branch=build_conf.git_branch,
