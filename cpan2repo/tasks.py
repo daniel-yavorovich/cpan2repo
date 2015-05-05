@@ -9,9 +9,7 @@ import paramiko
 import dirtools
 from celery import shared_task
 from django.conf import settings
-from cpan2repo.cpanm import get_pkg_depends
 from cpan2repo.metacpan import get_release_info
-from cpan2repo.cpanm import check_standard_module
 from cpan2repo.models import Package, ExcludePackage
 from webui.models import BuildConfiguration, PackageNameMapping
 
@@ -95,29 +93,12 @@ def make_deb_from_cpan(cpan_name, pass_ignore=False):
 
     logging.warn("Building package \"%s\" ..." % package_name)
 
-    # Get dependence list (only production runtime packages)
-    package_dependence = get_pkg_depends(cpan_name)
-
-    deb_depends = []
-
-    # Send task for build dependence modules
-    for mod_name in package_dependence:
-        if ExcludePackage.objects.filter(name=mod_name["deb_name"]):
-            continue
-
-        deb_depends.append(mod_name["deb_name"])
-
-        if not Package.objects.filter(name=mod_name["deb_name"]):
-            make_deb_from_cpan.delay(mod_name["orig_module_name"])
-
     # Change package statuses in DB
     pkg.status = 2
     pkg.save()
 
     # Formulation build command
     build_command = "dh-make-perl --exclude perllocal.pod --cpan %s --build --recursive --core-ok --pkg-perl --arch all" % cpan_name
-    if deb_depends:
-        build_command += " --depends %s" % ",".join(deb_depends)
 
     # Inside into temp build directory and start deb build from cpan
     os.chdir(settings.TMP_BUILD_DIR)
@@ -230,31 +211,6 @@ def build_pkg(build_conf_id):
 
     # Get depends list
     depends_list = [line for line in build_conf.depends_list.replace("\r", "").split('\n') if line.strip() != '']
-
-    if "cpanfile" in os.listdir("."):
-        for line in open("cpanfile", "r").readlines():
-            try:
-                module_name = get_release_info(line.split("'")[1])["metadata"]["name"]
-            except:
-                continue
-
-            if PackageNameMapping.objects.filter(orig_name=module_name):
-                pkg_name = PackageNameMapping.objects.get(orig_name=module_name).to_name
-            else:
-                pkg_name = "lib{cpan_name}-perl".format(
-                    cpan_name=module_name,
-                ).replace("::", "-").replace("_", "").lower()
-
-            if check_standard_module(module_name):
-                continue
-
-            depends_list.append(pkg_name)
-
-            if ExcludePackage.objects.filter(name=pkg_name):
-                continue
-
-            if not Package.objects.filter(name=pkg_name):
-                make_deb_from_cpan.delay(module_name)
 
     # Complectation deb package
     for dirname in os.listdir("."):
